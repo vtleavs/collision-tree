@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 public class CTNode
 {
     private Dimension sectorSize;
-    private Point sectorLocation;
+    private Point2D sectorLocation;
     private int branchHeight;
     
     private boolean leafNode = false;
@@ -32,7 +33,7 @@ public class CTNode
     
     private ArrayList<CTMember> members;
     
-    public CTNode(Point sectorLocation, Dimension sectorSize, int treeHeight, int branchHeight, CTNode parent)
+    public CTNode(Point2D sectorLocation, Dimension sectorSize, int treeHeight, int branchHeight, CTNode parent)
     {
         this.sectorSize = sectorSize;
         this.sectorLocation = sectorLocation;
@@ -43,14 +44,14 @@ public class CTNode
         if(branchHeight + 1 < treeHeight)
         {
             branchA = new CTNode(
-                    new Point((int)(sectorLocation.getX()), (int)(sectorLocation.getY())), 
+                    new Point2D.Double((int)(sectorLocation.getX()), (int)(sectorLocation.getY())), 
                     new Dimension((int)sectorSize.getWidth()/2, (int)sectorSize.getHeight()/2), 
                     treeHeight, 
                     branchHeight + 1,
                     this
             );
             branchB = new CTNode(
-                    new Point((int)(sectorLocation.getX() + sectorSize.getWidth()/2), 
+                    new Point2D.Double((int)(sectorLocation.getX() + sectorSize.getWidth()/2), 
                         (int)(sectorLocation.getY())), 
                     new Dimension((int)sectorSize.getWidth()/2, (int)sectorSize.getHeight()/2), 
                     treeHeight, 
@@ -58,7 +59,7 @@ public class CTNode
                     this
             );
             branchC = new CTNode(
-                    new Point((int)(sectorLocation.getX()), 
+                    new Point2D.Double((int)(sectorLocation.getX()), 
                         (int)(sectorLocation.getY() + sectorSize.getHeight()/2)), 
                     new Dimension((int)sectorSize.getWidth()/2, (int)sectorSize.getHeight()/2), 
                     treeHeight, 
@@ -66,7 +67,7 @@ public class CTNode
                     this
             );
             branchD = new CTNode(
-                    new Point((int)(sectorLocation.getX() + sectorSize.getWidth()/2), 
+                    new Point2D.Double((int)(sectorLocation.getX() + sectorSize.getWidth()/2), 
                         (int)(sectorLocation.getY() + sectorSize.getHeight()/2)), 
                     new Dimension((int)sectorSize.getWidth()/2, (int)sectorSize.getHeight()/2), 
                     treeHeight, 
@@ -100,7 +101,7 @@ public class CTNode
             selectNode(member.getLocation()).removeMember(member);
     }
     
-    public CTNode selectNode(Point location)
+    public CTNode selectNode(Point2D location)
     {
         if(location.getX() < sectorLocation.getX() + sectorSize.getWidth()/2
                 && location.getX() < sectorLocation.getY() + sectorSize.getHeight()/2)
@@ -117,7 +118,7 @@ public class CTNode
         return null;
     }
     
-    public boolean inSector(Point location)
+    public boolean inSector(Point2D location)
     {
         return location.getX() > sectorLocation.getX()
                 && location.getX() < sectorLocation.getX() + sectorSize.getWidth()
@@ -125,7 +126,7 @@ public class CTNode
                 && location.getY() < sectorLocation.getY() + sectorSize.getHeight();
     }
     
-    public ArrayList<CTMember> getMembersInRadius(Point location, int radius)
+    public ArrayList<CTMember> getMembersInRadius(Point2D location, int radius)
     {
         ArrayList<CTMember> result = new ArrayList<>();
         
@@ -152,28 +153,29 @@ public class CTNode
         return result;
     }
     
-    private boolean pointInRadius(Point center, Point point, int radius)
+    private boolean pointInRadius(Point2D center, Point2D point, int radius)
     {
-        return Math.sqrt( Math.pow(point.x - center.x, 2) + Math.pow(point.y - center.y, 2)) <= radius;
+        return Math.sqrt( Math.pow(point.getX() - center.getX(), 2) 
+                + Math.pow(point.getY() - center.getY(), 2)) <= radius;
     }
     
-     private boolean nodeInRadius(Point location, int radius)
+     private boolean nodeInRadius(Point2D location, int radius)
     {       
         int angleRadius = (int)Math.sqrt(Math.pow(radius, 2) / 2);
-        Point n = new Point(location.x, location.y - radius);
-        Point ne = new Point(location.x + angleRadius, location.y - angleRadius);
-        Point e = new Point(location.x + radius, location.y);
-        Point se = new Point(location.x + angleRadius, location.y + angleRadius);
-        Point s = new Point(location.x, location.y + radius);
-        Point sw = new Point(location.x - angleRadius, location.y + angleRadius);
-        Point w = new Point(location.x - radius, location.y);
-        Point nw = new Point(location.x - angleRadius, location.y - angleRadius);
+        Point2D n = new Point2D.Double(location.getX(), location.getY() - radius);
+        Point2D ne = new Point2D.Double(location.getX() + angleRadius, location.getY() - angleRadius);
+        Point2D e = new Point2D.Double(location.getX() + radius, location.getY());
+        Point2D se = new Point2D.Double(location.getX() + angleRadius, location.getY() + angleRadius);
+        Point2D s = new Point2D.Double(location.getX(), location.getY() + radius);
+        Point2D sw = new Point2D.Double(location.getX() - angleRadius, location.getY() + angleRadius);
+        Point2D w = new Point2D.Double(location.getX() - radius, location.getY());
+        Point2D nw = new Point2D.Double(location.getX() - angleRadius, location.getY() - angleRadius);
         
         return (inSector(n) && inSector(ne) && inSector(e) && inSector(se) 
                 && inSector(s) && inSector(sw) && inSector(w) && inSector(nw));
     }   
     
-    public void moveTo(CTMember member, Point to)
+    public void moveTo(CTMember member, Point2D to)
     {
         if(inSector(to) || this.branchHeight == 0)
         {
@@ -226,7 +228,7 @@ public class CTNode
         return parent;
     }
 
-    public Point getSectorLocation() {
+    public Point2D getSectorLocation() {
         return sectorLocation;
     }
 
@@ -238,7 +240,7 @@ public class CTNode
         this.parent = parent;
     }
 
-    public void setSectorLocation(Point sectorLocation) {
+    public void setSectorLocation(Point2D sectorLocation) {
         this.sectorLocation = sectorLocation;
     }
 

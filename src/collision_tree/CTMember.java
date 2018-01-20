@@ -6,6 +6,7 @@
 package collision_tree;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
@@ -20,7 +21,7 @@ import java.util.ArrayList;
  */
 public class CTMember<E>
 {
-    private Point location;
+    private Point2D location;
     private CTNode parent;
     private E element;
     
@@ -29,7 +30,7 @@ public class CTMember<E>
      * @param element The element associated with this member
      * @param location The location of this member in 2D space
      */
-    public CTMember(E element, Point location)
+    public CTMember(E element, Point2D location)
     {
         this.location = location;
         this.element = element;
@@ -40,7 +41,7 @@ public class CTMember<E>
      * 
      * @param location The location in the grid to move this member to
      */
-    public void moveTo(Point location)
+    public void moveTo(Point2D location)
     {
         if(parent.inSector(location))
             this.location = location;
@@ -100,7 +101,7 @@ public class CTMember<E>
      * 
      * @return The location of this member in 2D space
      */
-    public Point getLocation() {
+    public Point2D getLocation() {
         return location;
     }
 
@@ -108,7 +109,7 @@ public class CTMember<E>
      * 
      * @param location The location of this member in 2D space
      */
-    public void setLocation(Point location) {
+    public void setLocation(Point2D location) {
         this.location = location;
     }
 }
